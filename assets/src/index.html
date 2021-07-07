@@ -1,0 +1,95 @@
+//= template/head.html
+//= template/header.html
+<main>
+	<div class="container">
+		<div class="todo">
+			<div class="todo__top">
+				<div class="todo__toggle">
+					<label class="checkbox">
+						<input type="checkbox" class="hidden">
+						<span class="checkbox-btn"></span>
+					</label>
+				</div>
+				<div class="todo__input-box">
+					<input class="todo__input" id="todo-input" placeholder="What needs to be done?">
+				</div>
+			</div>
+			<ul class="todo-list" id="list">
+				<li class="todo-list__item" data-date="1625688538899"><div class="todo-list__checkbox"><label class="checkbox"><input class="hidden" type="checkbox"><span class="checkbox-btn"></span></label></div><div class="todo-list__view"><div class="todo-list__text hidden">sssssssss</div><input class="todo-list__input" type="text"></div><button class="todo-list__button"><i class="icon icon-close"></i></button></li>
+				<!-- <li class="todo-list__item">
+					<div class="todo-list__checkbox">
+						<label class="checkbox">
+							<input type="checkbox" class="hidden">
+							<span class="checkbox-btn"></span>
+						</label>
+					</div>
+					<div class="todo-list__view">
+						<div class="todo-list__text">some text</div>
+					</div>
+					<button class="todo-list__button">
+						<i class="icon icon-close"></i>
+					</button>
+				</li> -->
+				<!-- <li class="todo-list__item">
+					<div class="todo-list__checkbox">
+						<label class="checkbox">
+							<input type="checkbox" class="hidden">
+							<span class="checkbox-btn"></span>
+						</label>
+					</div>
+					<div class="todo-list__view">
+						<input type="text" class="todo-list__input">
+					</div>
+					<button class="todo-list__button">
+						<i class="icon icon-close"></i>
+					</button>
+				</li> -->
+			</ul>
+			<div class="todo__footer">
+				<div class="todo-count">
+					<strong>2</strong> items
+				</div>
+				<div>
+					<ul class="todo-filter">
+						<li>
+							<label class="radio">
+								<input type="radio" class="hidden" name="filter">
+								<span class="radio-text">All</span>
+							</label>
+						</li>
+						<li>
+							<label class="radio">
+								<input type="radio" class="hidden" name="filter">
+								<span class="radio-text">Active</span>
+							</label>
+						</li>
+						<li>
+							<label class="radio">
+								<input type="radio" class="hidden" name="filter">
+								<span class="radio-text">Complete</span>
+							</label>
+						</li>
+					</ul>
+				</div>
+				<div>
+					<ul class="todo-sort">
+						<li>
+							<label class="radio">
+								<input type="radio" class="hidden" name="sort">
+								<span class="radio-text">Asc</span>
+							</label>
+						</li>
+						<li>
+							<label class="radio">
+								<input type="radio" class="hidden" name="sort">
+								<span class="radio-text">Desc</span>
+							</label>
+						</li>
+					</ul>
+				</div>
+				<div><button class="todo-clear">Clear</button></div>
+			</div>
+		</div>
+	</div>
+</main>
+//= template/footer.html
