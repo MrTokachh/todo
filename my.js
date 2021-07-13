@@ -1,5 +1,6 @@
 var input = document.getElementById("todo-input");
 var inputList = document.getElementById("list");
+var markAll = document.getElementById("mark-all");
 var todoArr = [];
 
 inputList.addEventListener('click', function(e) {
@@ -12,6 +13,21 @@ inputList.addEventListener('click', function(e) {
 });
 
 inputList.addEventListener('dblclick', editItem);
+
+markAll.addEventListener('change', function() {
+  todoArr.forEach(function(el) {
+    el.completed = !el.completed
+  })
+
+  var items = document.querySelectorAll('.todo-list__item');
+  
+  for (var i = 0; i < items.length; ++i) {
+    items[i].classList.toggle("is-checked");
+
+    var inputs = items[i].querySelectorAll("input[type='checkbox']")
+    inputs[i].checked = !inputs[i].checked;
+  }
+});
 
 input.addEventListener("keyup", function(e) {
   var val = input.value;
@@ -72,6 +88,8 @@ function renderTodo(item) {
   checkBox.setAttribute('type', 'checkbox');
   checkBoxLabel.append(checkBox);
 
+  checkBox.addEventListener('change', checkedItem)
+
   var checkBoxBtn = document.createElement('span');
   checkBoxBtn.classList.add('checkbox-btn');
   checkBoxLabel.append(checkBoxBtn);
@@ -97,7 +115,7 @@ function renderTodo(item) {
   listItem.append(viewBox);
   listItem.append(todoBtn);
 
-  input.value = '';
+  input.value = ''; 
 }
 
 function removeItem(id, el) {
@@ -131,7 +149,7 @@ document.addEventListener('blur', function(e){
     prev.classList.remove('hidden');
     el.classList.add('hidden');
 
-    todoArr.forEach(function (element) {
+    todoArr.forEach(function(element) {
       if (element.id == id) {
         element.name = val
       }
@@ -141,4 +159,20 @@ document.addEventListener('blur', function(e){
   if(el.classList.contains("todo-list__input")) {
     validLength(length, el, editFunc);
   }
-});
+}, true);
+
+function checkedItem(e) {
+  var parent = e.target.closest('.todo-list__item');
+  var id = parent.getAttribute('data-date')
+  if (e.target.checked) {
+    parent.classList.add('is-checked');
+  } else {
+    parent.classList.remove('is-checked')
+  }
+
+  todoArr.forEach(function(element) {
+    if (element.id == id) {
+      element.completed = !element.completed;
+    }
+  })
+}
