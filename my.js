@@ -15,17 +15,21 @@ inputList.addEventListener('click', function(e) {
 inputList.addEventListener('dblclick', editItem);
 
 markAll.addEventListener('change', function() {
-  todoArr.forEach(function(el) {
-    el.completed = !el.completed
-  })
-
+  var isChecked = this.checked;
   var items = document.querySelectorAll('.todo-list__item');
+  var inputs = inputList.querySelectorAll("input[type='checkbox']");
+
+  todoArr.forEach(function(el) {
+    el.completed = isChecked
+  })
   
   for (var i = 0; i < items.length; ++i) {
-    items[i].classList.toggle("is-checked");
-
-    var inputs = items[i].querySelectorAll("input[type='checkbox']")
-    inputs[i].checked = !inputs[i].checked;
+    if (isChecked) {
+      items[i].classList.add("is-checked");
+    } else {
+      items[i].classList.remove("is-checked");
+    };
+    inputs[i].checked = isChecked;
   }
 });
 
@@ -42,13 +46,22 @@ input.addEventListener("keyup", function(e) {
 
   validLength(length, input, newTodo);
 
-  checkAllDisplay()
+  checkAllDisplay();
+
+  todoLength()
 });
 
 function checkAllDisplay() {
-  var checkAll = document.querySelector('.todo__toggle')
+  var checkAll = document.querySelector('.todo__toggle');
+  var footer = document.querySelector('.todo__footer');
 
-  todoArr.length >= 1 ? checkAll.classList.add('active') : checkAll.classList.remove('active');
+  if (todoArr.length >= 1) {
+    checkAll.classList.add('active');
+    footer.classList.add('active');
+  } else {
+    checkAll.classList.remove('active');
+    footer.classList.remove('active');
+  }
 }
 
 function validLength(length, item, func) {
@@ -163,11 +176,11 @@ document.addEventListener('blur', function(e){
 
 function checkedItem(e) {
   var parent = e.target.closest('.todo-list__item');
-  var id = parent.getAttribute('data-date')
+  var id = parent.getAttribute('data-date');
   if (e.target.checked) {
     parent.classList.add('is-checked');
   } else {
-    parent.classList.remove('is-checked')
+    parent.classList.remove('is-checked');
   }
 
   todoArr.forEach(function(element) {
@@ -175,4 +188,32 @@ function checkedItem(e) {
       element.completed = !element.completed;
     }
   })
+
+  var checkArr = todoArr.filter(function(n) {
+    return n.completed == true;
+  })
+
+  if (checkArr.length === todoArr.length) {
+    markAll.checked = true;
+  } else {
+    markAll.checked = false;
+  }
+}
+
+function todoLength(status) {
+  var lengthArea = document.querySelector('.todo-count');
+  var completeTodo = todoArr.filter(function(n) {
+    return n.completed == true;
+  });
+  var activeTodo = todoArr.filter(function(n) {
+    return n.completed == false;
+  });
+
+  if (status === "Complete") {
+    lengthArea.innerHTML = completeTodo.length + ' items';
+  } else if (status === "Active") {
+    lengthArea.innerHTML = activeTodo.length + ' items';
+  } else {
+    lengthArea.innerHTML = todoArr.length + ' items';
+  }
 }
