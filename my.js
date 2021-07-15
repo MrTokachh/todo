@@ -2,6 +2,7 @@ var input = document.getElementById("todo-input");
 var inputList = document.getElementById("list");
 var markAll = document.getElementById("mark-all");
 var todoArr = [];
+var filterStatus = "All";
 
 inputList.addEventListener('click', function(e) {
   var el = e.target;
@@ -9,6 +10,7 @@ inputList.addEventListener('click', function(e) {
 
   if (el.classList.contains('todo-list__button')) {
     removeItem(parent.getAttribute('data-date'), parent);
+    todoLength(filterStatus);
   }
 });
 
@@ -48,7 +50,7 @@ input.addEventListener("keyup", function(e) {
 
   checkAllDisplay();
 
-  todoLength()
+  todoLength(filterStatus)
 });
 
 function checkAllDisplay() {
@@ -177,6 +179,7 @@ document.addEventListener('blur', function(e){
 function checkedItem(e) {
   var parent = e.target.closest('.todo-list__item');
   var id = parent.getAttribute('data-date');
+
   if (e.target.checked) {
     parent.classList.add('is-checked');
   } else {
@@ -198,6 +201,8 @@ function checkedItem(e) {
   } else {
     markAll.checked = false;
   }
+
+  todoLength(filterStatus);
 }
 
 function todoLength(status) {
@@ -217,3 +222,44 @@ function todoLength(status) {
     lengthArea.innerHTML = todoArr.length + ' items';
   }
 }
+
+var filterAction = document.querySelectorAll('.todo-filter__radio');
+
+filterAction.forEach(function(el) {
+  el.addEventListener('click', function() {
+    filterStatus = el.value;
+    todoLength(filterStatus);
+    var item = document.querySelectorAll('.todo-list__item');
+    var completeTodo = todoArr.filter(function(n) {
+      return n.completed == true;
+    });
+    var activeTodo = todoArr.filter(function(n) {
+      return n.completed == false;
+    });
+
+    item.forEach(function(item) {
+      var id = item.getAttribute('data-date')
+      item.classList.add('hidden')
+
+      
+      switch (filterStatus) {
+        case 'Complete':
+          completeTodo.forEach(function(element) {
+            if (element.id == id) {
+              item.classList.remove('hidden')
+            }
+          })
+          break;
+        case 'Active':
+          activeTodo.forEach(function(element) {
+            if (element.id == id) {
+              item.classList.remove('hidden')
+            }
+          })
+          break;
+        default:
+          item.classList.remove('hidden')
+      }
+    })
+  })
+})

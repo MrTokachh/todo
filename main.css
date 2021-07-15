@@ -586,6 +586,10 @@ textarea {
   text-decoration: line-through;
 }
 
+.todo-list__item.hidden {
+  display: none;
+}
+
 .todo-list__checkbox {
   width: 40px;
   height: 40px;
