@@ -241,7 +241,6 @@ filterAction.forEach(function(el) {
       var id = item.getAttribute('data-date')
       item.classList.add('hidden')
 
-      
       switch (filterStatus) {
         case 'Complete':
           completeTodo.forEach(function(element) {
@@ -261,5 +260,33 @@ filterAction.forEach(function(el) {
           item.classList.remove('hidden')
       }
     })
+  })
+})
+
+var sortAction = document.querySelectorAll('.todo-sort__radio');
+
+sortAction.forEach(function(el) {
+  el.addEventListener('click', function() {
+    
+
+    var items = document.querySelectorAll('.todo-list__item');
+    var itemsArr = []
+
+    for (var i in items) {
+      itemsArr.push(items[i]);
+    }
+
+    todoArr.sort(function(a, b) {
+      if (a.name[0].toLowerCase() < b.name[0].toLowerCase() || a.id[0] - b.id[0]) return -1;
+      if (a.name[0].toLowerCase() > b.name[0].toLowerCase() || a.id[0] - b.id[0]) return 1;
+      return 0
+    })
+
+    // items.forEach(function(element) {
+    //   var id = element.getAttribute('data-date')
+
+    // })
+
+    console.log(itemsArr)
   })
 })
