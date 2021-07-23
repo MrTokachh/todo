@@ -1,37 +1,30 @@
 var input = document.getElementById("todo-input");
 var inputList = document.getElementById("list");
 var markAll = document.getElementById("mark-all");
+var clearBtn = document.getElementById('todo-clear');
+var checkAll = document.querySelector('.todo__toggle');
+var footer = document.querySelector('.todo__footer');
+var filterAction = document.querySelectorAll('.todo-filter__radio');
+var sortAction = document.querySelectorAll('.todo-sort__radio');
 var todoArr = [];
 var filterStatus = "All";
-
-inputList.addEventListener('click', function(e) {
-  var el = e.target;
-  var parent = el.parentElement
-
-  if (el.classList.contains('todo-list__button')) {
-    removeItem(parent.getAttribute('data-date'), parent);
-    todoLength(filterStatus);
-  }
-});
-
-inputList.addEventListener('dblclick', editItem);
 
 markAll.addEventListener('change', function() {
   var isChecked = this.checked;
   var items = document.querySelectorAll('.todo-list__item');
-  var inputs = inputList.querySelectorAll("input[type='checkbox']");
 
   todoArr.forEach(function(el) {
-    el.completed = isChecked
-  })
-  
+    el.completed = isChecked;
+  });
+
   for (var i = 0; i < items.length; ++i) {
     if (isChecked) {
       items[i].classList.add("is-checked");
     } else {
       items[i].classList.remove("is-checked");
     };
-    inputs[i].checked = isChecked;
+    var inputsTwo = items[i].getElementsByClassName('todo-check');
+    inputsTwo[0].checked = isChecked;
   }
 });
 
@@ -42,29 +35,27 @@ input.addEventListener("keyup", function(e) {
   var newTodo = function() {
     var isEnter = e.keyCode === 13;
     if (isEnter) {
-      renderTodo(val)
-    }
+      renderTodo(val);
+      checkAllStatus();
+    };
   };
 
   validLength(length, input, newTodo);
 
   checkAllDisplay();
 
-  todoLength(filterStatus)
+  todoLength(filterStatus);
 });
 
 function checkAllDisplay() {
-  var checkAll = document.querySelector('.todo__toggle');
-  var footer = document.querySelector('.todo__footer');
-
   if (todoArr.length >= 1) {
     checkAll.classList.add('active');
     footer.classList.add('active');
   } else {
     checkAll.classList.remove('active');
     footer.classList.remove('active');
-  }
-}
+  };
+};
 
 function validLength(length, item, func) {
   if (length < 3) {
@@ -74,8 +65,8 @@ function validLength(length, item, func) {
   } else {
     item.classList.remove('error');
     func();
-  }
-}
+  };
+};
 
 function renderTodo(item) {
   var todoProp = {
@@ -88,7 +79,7 @@ function renderTodo(item) {
 
   var listItem = document.createElement('li');
   listItem.classList.add('todo-list__item');
-  listItem.setAttribute('data-date', todoProp.id);
+  listItem.id = todoProp.id;
   inputList.append(listItem);
 
   var checkBoxWrap = document.createElement('div');
@@ -100,10 +91,10 @@ function renderTodo(item) {
 
   var checkBox = document.createElement('input');
   checkBox.classList.add('hidden');
+  checkBox.classList.add('todo-check');
   checkBox.setAttribute('type', 'checkbox');
   checkBoxLabel.append(checkBox);
-
-  checkBox.addEventListener('change', checkedItem)
+  checkBox.addEventListener('change', checkedItem);
 
   var checkBoxBtn = document.createElement('span');
   checkBoxBtn.classList.add('checkbox-btn');
@@ -111,6 +102,7 @@ function renderTodo(item) {
 
   var viewBox = document.createElement('div');
   viewBox.classList.add('todo-list__view');
+  viewBox.addEventListener('dblclick', editItem);
 
   var todoText = document.createElement('div');
   todoText.classList.add('todo-list__text');
@@ -122,42 +114,56 @@ function renderTodo(item) {
   todoInput.setAttribute('type', 'text');
   todoInput.value = item;
   viewBox.append(todoInput);
+  todoInput.addEventListener('blur', editEnd);
+  todoInput.addEventListener('keyup', function() {
+    if (this.value.length < 3) {
+      todoInput.classList.add('error');
+    } else if (this.value.length > 5) {
+      todoInput.value = todoInput.value.substring(0, 5);
+    } else {
+      todoInput.classList.remove('error');
+    };
+  });
   
   var todoBtn = document.createElement('button');
   todoBtn.classList.add('todo-list__button');
+  todoBtn.addEventListener('click', removeItem);
 
   listItem.append(checkBoxWrap);
   listItem.append(viewBox);
   listItem.append(todoBtn);
 
   input.value = ''; 
-}
+};
 
-function removeItem(id, el) {
+function removeItem(e) {
+  var el = e.target;
+  var parent = el.parentElement;
+  var id = parent.id;
   todoArr = todoArr.filter(function(item) {
     return item.id != id;
   });
 
-  el.remove();
+  checkAllStatus();
+  parent.remove();
   checkAllDisplay();
-}
+  todoLength(filterStatus);
+};
 
 function editItem(e) {
   var el = e.target;
   var next = el.nextSibling;
 
-  if (el.classList.contains('todo-list__text')) {
-    next.classList.remove('hidden');
-    el.classList.add('hidden');
-  }
-}
+  next.classList.remove('hidden');
+  el.classList.add('hidden');
+};
 
-document.addEventListener('blur', function(e){
+function editEnd(e) {
   var el = e.target;
   var prev = el.previousSibling;
   var val = el.value;
   var length = val.length;
-  var id = el.parentElement.parentElement.getAttribute('data-date');
+  var id = el.parentElement.parentElement.id;
 
   var editFunc = function() {
     prev.textContent = val;
@@ -166,44 +172,34 @@ document.addEventListener('blur', function(e){
 
     todoArr.forEach(function(element) {
       if (element.id == id) {
-        element.name = val
-      }
-    })
+        element.name = val;
+      };
+    });
   };
 
-  if(el.classList.contains("todo-list__input")) {
-    validLength(length, el, editFunc);
-  }
-}, true);
+  validLength(length, el, editFunc);
+};
 
 function checkedItem(e) {
   var parent = e.target.closest('.todo-list__item');
-  var id = parent.getAttribute('data-date');
+  var id = parent.id;
 
   if (e.target.checked) {
     parent.classList.add('is-checked');
   } else {
     parent.classList.remove('is-checked');
-  }
+  };
 
   todoArr.forEach(function(element) {
     if (element.id == id) {
       element.completed = !element.completed;
-    }
-  })
+    };
+  });
 
-  var checkArr = todoArr.filter(function(n) {
-    return n.completed == true;
-  })
-
-  if (checkArr.length === todoArr.length) {
-    markAll.checked = true;
-  } else {
-    markAll.checked = false;
-  }
-
+  checkAllStatus();
+  filterFunc();
   todoLength(filterStatus);
-}
+};
 
 function todoLength(status) {
   var lengthArea = document.querySelector('.todo-count');
@@ -220,73 +216,125 @@ function todoLength(status) {
     lengthArea.innerHTML = activeTodo.length + ' items';
   } else {
     lengthArea.innerHTML = todoArr.length + ' items';
-  }
-}
+  };
+};
 
-var filterAction = document.querySelectorAll('.todo-filter__radio');
+function checkAllStatus() {
+  var checkArr = todoArr.filter(function(n) {
+    return n.completed == true;
+  })
+
+  if (checkArr.length === todoArr.length) {
+    markAll.checked = true;
+    if (todoArr.length == 0) markAll.checked = false;
+  } else {
+    markAll.checked = false;
+  };
+
+  if (checkArr.length >= 1) {
+    clearBtn.classList.add('active');
+  } else {
+    clearBtn.classList.remove('active');
+  };
+};
 
 filterAction.forEach(function(el) {
   el.addEventListener('click', function() {
     filterStatus = el.value;
     todoLength(filterStatus);
-    var item = document.querySelectorAll('.todo-list__item');
-    var completeTodo = todoArr.filter(function(n) {
-      return n.completed == true;
-    });
-    var activeTodo = todoArr.filter(function(n) {
-      return n.completed == false;
-    });
-
-    item.forEach(function(item) {
-      var id = item.getAttribute('data-date')
-      item.classList.add('hidden')
-
-      switch (filterStatus) {
-        case 'Complete':
-          completeTodo.forEach(function(element) {
-            if (element.id == id) {
-              item.classList.remove('hidden')
-            }
-          })
-          break;
-        case 'Active':
-          activeTodo.forEach(function(element) {
-            if (element.id == id) {
-              item.classList.remove('hidden')
-            }
-          })
-          break;
-        default:
-          item.classList.remove('hidden')
-      }
-    })
+    filterFunc();
   })
-})
+});
 
-var sortAction = document.querySelectorAll('.todo-sort__radio');
+function filterFunc() {
+  var items = document.querySelectorAll('.todo-list__item');
+  var completeTodo = todoArr.filter(function(n) {
+    return n.completed == true;
+  });
+  var activeTodo = todoArr.filter(function(n) {
+    return n.completed == false;
+  });
+
+  items.forEach(function(item) {
+    var id = item.id;
+    item.classList.add('hidden');
+
+    switch (filterStatus) {
+      case 'Complete':
+        completeTodo.forEach(function(element) {
+          if (element.id == id) {
+            item.classList.remove('hidden');
+          };
+        });
+        break;
+      case 'Active':
+        activeTodo.forEach(function(element) {
+          if (element.id == id) {
+            item.classList.remove('hidden');
+          };
+        });
+        break;
+      default:
+        item.classList.remove('hidden');
+    };
+  })
+}
 
 sortAction.forEach(function(el) {
   el.addEventListener('click', function() {
-    
-
     var items = document.querySelectorAll('.todo-list__item');
-    var itemsArr = []
+    var itemsArr = Array.prototype.slice.call(items);
 
-    for (var i in items) {
-      itemsArr.push(items[i]);
-    }
+    itemsArr.sort(function(a, b) {
+      var aName = a.textContent.toLowerCase();
+      var bName = b.textContent.toLowerCase();
+      var aDate = a.id;
+      var bDate = b.id;
 
-    todoArr.sort(function(a, b) {
-      if (a.name[0].toLowerCase() < b.name[0].toLowerCase() || a.id[0] - b.id[0]) return -1;
-      if (a.name[0].toLowerCase() > b.name[0].toLowerCase() || a.id[0] - b.id[0]) return 1;
-      return 0
-    })
+      if (el.value === 'Asc') {
+        if (aName < bName) return -1;
+        if (aName > bName) return 1;
 
-    // items.forEach(function(element) {
-    //   var id = element.getAttribute('data-date')
+        if (aName == bName) {
+          if (aDate < bDate) return -1;
+          if (aDate > bDate) return 1;
+          return 0;
+        }
+      } else {
+        if (aName < bName) return 1;
+        if (aName > bName) return -1;
 
-    // })
+        if (aName == bName) {
+          if (aDate < bDate) return 1;
+          if (aDate > bDate) return -1;
+          return 0;
+        };
+      };
+    });
 
-    console.log(itemsArr)
-  })
-})
+    itemsArr.forEach(function(item) {
+      inputList.appendChild(item);
+    });
+  });
+});
+
+clearBtn.addEventListener('click', clearFunc);
+
+function clearFunc() {
+  var items = document.querySelectorAll('.todo-list__item');
+
+  items.forEach(function(el) {
+    var id = el.id;
+
+    if (el.classList.contains("is-checked")) {
+      el.remove();
+
+      todoArr = todoArr.filter(function(item) {
+        return item.id != id;
+      });
+    };
+  });
+
+  checkAllDisplay();
+  todoLength(filterStatus);
+};

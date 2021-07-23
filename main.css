@@ -782,8 +782,13 @@ textarea {
 
 .todo-clear {
   border-bottom: 1px solid transparent;
+  display: none;
 }
 
 .todo-clear:hover {
   border-color: #939597;
+}
+
+.todo-clear.active {
+  display: block;
 }
